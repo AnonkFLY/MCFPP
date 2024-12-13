@@ -2,7 +2,7 @@ import kotlin.io.path.Path
 
 plugins {
     kotlin("jvm") version "1.9.23"
-    id("fabric-loom") version "1.9-SNAPSHOT"
+    id("fabric-loom") version "1.9.2"
     id("top.mcfpp.gradle") version "1.0-SNAPSHOT"
 }
 

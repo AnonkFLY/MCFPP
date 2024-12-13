@@ -19,12 +19,12 @@ import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
 object MCFPPStringTest {
-    fun readFromString(str: String, args: Array<String> = arrayOf(), targetPath: String? = null){
+    fun readFromString(str: String, args: Array<String> = arrayOf(), targetPath: String? = null) {
         val source = ConfigurationSource(FileInputStream("log4j2.xml"))
-        Configurator.initialize(null,source)
+        Configurator.initialize(null, source)
         //编译参数
-        if(args.isNotEmpty()){
-            if(args.contains("debug")){
+        if (args.isNotEmpty()) {
+            if (args.contains("debug")) {
                 CompileSettings.isDebug = true
                 LogProcessor.warn("Compiling in debug mode.")
             }
@@ -61,10 +61,10 @@ object MCFPPStringTest {
         Project.optimization() //优化
         Project.genIndex() //生成索引
         Project.ctx = null
-        if(Project.config.targetPath != null){
-            try{
+        if (Project.config.targetPath != null) {
+            try {
                 DatapackCreator.createDatapack(Project.config.targetPath!!.absolutePathString()) //生成数据包
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 LogProcessor.error("Cannot create datapack in path: ${Project.config.targetPath}")
             }
         }
@@ -72,12 +72,12 @@ object MCFPPStringTest {
         GlobalField.printAll()
     }
 
-    fun readFromSingleFile(path: String){
-        val source:ConfigurationSource
+    fun readFromSingleFile(path: String) {
+        val source: ConfigurationSource
         try {
-            source = ConfigurationSource(FileInputStream("log4j2.xml"))
-            Configurator.initialize(null,source)
-        }catch (e:Exception){
+            source = ConfigurationSource(this.javaClass.getResourceAsStream("/log4j2.xml"))
+            Configurator.initialize(null, source)
+        } catch (e: Exception) {
             println("Failed to load log4j2.xml")
         }
         try {
@@ -100,7 +100,7 @@ object MCFPPStringTest {
             LogProcessor.debug("Analysing project...")
             //解析文件
             //添加默认库的域
-            if(!CompileSettings.ignoreStdLib){
+            if (!CompileSettings.ignoreStdLib) {
                 GlobalField.importedLibNamespaces["mcfpp.sys"] = GlobalField.libNamespaces["mcfpp.sys"]
             }
             var charStream: CharStream = CharStreams.fromString(code)
@@ -110,7 +110,7 @@ object MCFPPStringTest {
             MCFPPFieldVisitor().visit(context)
             GlobalField.importedLibNamespaces.clear()
             //添加默认库域
-            if(!CompileSettings.ignoreStdLib){
+            if (!CompileSettings.ignoreStdLib) {
                 GlobalField.importedLibNamespaces["mcfpp.sys"] = GlobalField.libNamespaces["mcfpp.sys"]
             }
             val visitor = MCFPPImVisitor()

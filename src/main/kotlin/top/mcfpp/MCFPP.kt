@@ -2,6 +2,7 @@ package top.mcfpp
 
 import org.apache.logging.log4j.core.config.ConfigurationSource
 import org.apache.logging.log4j.core.config.Configurator
+import top.mcfpp.commandline.LineCompiler
 import top.mcfpp.io.DatapackCreator
 import top.mcfpp.model.field.GlobalField
 import top.mcfpp.util.LogProcessor
@@ -16,11 +17,11 @@ import kotlin.io.path.absolutePathString
  */
 fun main(args: Array<String>) {
     //获取log4j2.xml配置文件
-    val source:ConfigurationSource
+    val source: ConfigurationSource
     try {
-        source = ConfigurationSource(FileInputStream("log4j2.xml"))
-        Configurator.initialize(null,source)
-    }catch (e:Exception){
+        source = ConfigurationSource(LineCompiler::class.java.getResourceAsStream("/log4j2.xml"))
+        Configurator.initialize(null, source)
+    } catch (e: Exception) {
         println("Failed to load log4j2.xml")
     }
     if (args.isNotEmpty()) {
@@ -29,7 +30,7 @@ fun main(args: Array<String>) {
         LogProcessor.info("Tips: " + UwU.tip) //生成tips
 
         val path = args[0]
-        if(!Files.exists(Path(path))){
+        if (!Files.exists(Path(path))) {
             LogProcessor.error("Cannot find file: $path")
         }
         compile(Project.readConfig(path)) //读取配置文件
@@ -37,7 +38,7 @@ fun main(args: Array<String>) {
     }
 }
 
-fun compile(config: ProjectConfig){
+fun compile(config: ProjectConfig) {
     val start: Long = System.currentTimeMillis()
 
     Project.config = config
@@ -53,11 +54,11 @@ fun compile(config: ProjectConfig){
     Project.optimization() //优化
     Project.genIndex() //生成索引
     Project.ctx = null
-    if(!Project.config.noDatapack){
+    if (!Project.config.noDatapack) {
         Project.compileStage++
-        try{
+        try {
             DatapackCreator.createDatapack(Project.config.targetPath!!.absolutePathString()) //生成数据包
-        }catch (e: Exception){
+        } catch (e: Exception) {
             LogProcessor.error("Cannot create datapack in path: ${Project.config.targetPath}", e)
         }
         Project.stageProcessor[Project.compileStage].forEach { it() }
@@ -70,10 +71,10 @@ object MCFPP {
     const val version = "0.1.0"
 }
 
-fun parseArgs(args: List<String>){
+fun parseArgs(args: List<String>) {
 
-    for (arg in args){
-        when(arg){
+    for (arg in args) {
+        when (arg) {
             "-debug" -> CompileSettings.isDebug = true
             "-ignoreStdLib" -> CompileSettings.ignoreStdLib = true
             "-isLib" -> CompileSettings.isLib = true

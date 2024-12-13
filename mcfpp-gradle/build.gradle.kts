@@ -33,6 +33,7 @@ kotlin {
 
 tasks.shadowJar {
     minimize()
+    dependsOn(rootProject.tasks.shadowJar)
 }
 
 gradlePlugin {

@@ -1,8 +1,5 @@
 import org.gradle.kotlin.dsl.cpp
-import org.jetbrains.kotlin.fir.declarations.builder.buildScript
 import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.Optional
 
 plugins {
@@ -32,12 +29,11 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    implementation("org.apache.groovy:groovy-all:4.0.11")
+//    implementation("org.apache.groovy:groovy-all:4.0.11")
     implementation("com.alibaba.fastjson2:fastjson2:2.0.28")
     implementation("org.apache.logging.log4j:log4j-api:2.20.0")
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.20.0")
-    implementation("org.openjdk.nashorn:nashorn-core:15.4")
     implementation("com.github.Querz:NBT:6.1")
     implementation("com.mojang:brigadier:1.0.18")
     implementation("org.commonmark:commonmark:0.24.0")
@@ -53,7 +49,24 @@ dependencies {
 }
 
 tasks.shadowJar {
-    minimize()
+//    minimize()
+    isZip64 = true
+
+    configurations = listOf(
+        project.configurations.runtimeClasspath.get()
+    )
+
+    manifest {
+        attributes("Main-Class" to "top.mcfpp.MCFPPKt")
+    }
+    from("LICENSE")
+    from("log4j2.xml")
+    from("build/dll"){
+        into("native")
+        include("**/*.dll")
+    }
+    archiveClassifier = ""
+    exclude("com/ibm/icu/**")
 }
 
 tasks.test {
@@ -70,23 +83,6 @@ tasks.generateGrammarSource {
             listOf("-visitor", "-long-messages") +
             listOf( "-package", "top.mcfpp.antlr")
     outputDirectory =  File("build/generated-src/antlr/main/top/mcfpp/antlr")
-}
-
-tasks.jar{
-    manifest{
-        attributes("Main-Class" to "top.mcfpp.MCFPPKt")
-    }
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
-
-    from("build/dll"){
-        into("native")
-        include("**/*.dll")
-    }
-
-    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
-
-    isZip64 = true
 }
 
 val jniSourceDir = file("src/main/java/top/mcfpp/jni")
