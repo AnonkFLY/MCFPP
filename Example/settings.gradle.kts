@@ -6,9 +6,10 @@ pluginManagement {
         gradlePluginPortal()
         maven("https://jitpack.io/")
         maven("https://libraries.minecraft.net")
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
-}
